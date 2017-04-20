@@ -1,6 +1,7 @@
 #include "Matrix.h"
 
-//Constructors
+//********************************************* Constructors
+
 Matrix::Matrix(size_t rows, size_t columns, double val): _rows{rows}, _columns{columns},
 data{make_unique<double []>(rows * columns)}
 {
@@ -22,7 +23,22 @@ data{make_unique<double []>(rows * columns)}
         }
 
 
-// copy constructor
+Matrix::Matrix(size_t rows, size_t columns, string str): _rows{rows}, _columns{columns}
+{
+    if(str=="r")
+    {
+        srand((unsigned) time(0));
+        int mmax=100,
+        mmin=0;
+        data=make_unique<double []>(rows * columns);
+        {
+            for (size_t i =0; i<rows*columns; i++)
+                data[i]=((rand()%(mmax-mmin+1))-mmin)/100.00;
+        }
+    }
+}
+
+//***************************************** copy constructor
 Matrix::Matrix( const  Matrix& obj)
 {
     _columns=obj._columns;
@@ -33,7 +49,7 @@ Matrix::Matrix( const  Matrix& obj)
 }
 
 
-// accessors
+/************************************ GET *************/
 
 size_t Matrix::rows() const
 {
@@ -45,8 +61,14 @@ size_t Matrix::columns() const
     return _columns;
 }
 
-
-
+Matrix Matrix::size()
+{
+    Matrix M(1,2);
+    M[0][0]=_rows;
+    M[0][1]=_columns;
+    cout<< '['<<_rows<<','<<_columns<< ']'<<endl;
+    return M;
+}
 
  double Matrix::get(size_t i, size_t j)
  {
@@ -58,21 +80,7 @@ double Matrix::get(size_t i)
     return data[i];
 }
 
-Matrix Matrix::size()
-{
-    Matrix M(1,2);
-    M[0][0]=_rows;
-    M[0][1]=_columns;
-    cout<< '['<<_rows<<','<<_columns<< ']'<<endl;
-    return M;
-}
 
-// mutartors
-
-void Matrix::set(size_t i, double val)
-{
-     data[i]=val;
-}
 
 //diplay
 void Matrix::dispMatrix()
@@ -80,14 +88,35 @@ void Matrix::dispMatrix()
     for(size_t i=0; i<_rows ; i++)
     {
         for(size_t j=0; j<_columns;j++)
-           // cout<< data[j+ i * _columns] <<" ";
-        cout<< data[i*_columns+j] <<" ";
+            // cout<< data[j+ i * _columns] <<" ";
+            cout<< data[i*_columns+j] <<" ";
         cout<<endl;
     }
 }
 
+/*************************** SET ***********************/
 
-//operator overloading
+void Matrix::set(size_t i, double val)
+{
+     data[i]=val;
+}
+
+
+//****************************************** Operators
+
+Matrix Matrix::T()
+{
+    Matrix M(_columns,_rows);
+    for(size_t i=0; i<_columns;i++)
+        for(size_t j=0; j<_rows;j++)
+            M[i][j]=data[j*_columns+i];
+    return M;
+}
+
+/*********************************** operator overloading *******************/
+
+
+//********************* []
 double * Matrix::operator[](const size_t row)
 {
     if(static_cast<int> (row) <0 || row>=_rows)
@@ -100,6 +129,7 @@ double * Matrix::operator[](const size_t row)
         return row * _columns + data.get();
     }
 }
+//***************** =
 
 const Matrix  Matrix::operator=(const Matrix & obj)
 {
@@ -110,6 +140,8 @@ const Matrix  Matrix::operator=(const Matrix & obj)
         data[i]=obj.data[i];
     return *this;
 }
+
+//***************** +
 
 Matrix  Matrix::operator+(Matrix & obj)
 {
@@ -126,3 +158,36 @@ Matrix  Matrix::operator+(Matrix & obj)
         return temp;
     }
 }
+
+Matrix  Matrix::operator+(double val)
+{
+        Matrix temp(_rows,_columns, 0);
+        for(size_t i=0; i<_rows*_columns; i++)
+            temp.data[i]=data[i]+val;
+        return temp;
+}
+
+Matrix  Matrix::operator*(double val)
+{
+    Matrix temp(_rows,_columns, 0);
+    for(size_t i=0; i<_rows*_columns; i++)
+        temp.data[i]=data[i]*val;
+    return temp;
+}
+
+//********* Friends
+//*************************** <<
+
+
+ostream &  operator << (ostream & strm, Matrix &M)
+{
+    for(size_t i=0; i<M.rows() ; i++)
+    {
+        for(size_t j=0; j<M.columns();j++)
+            // cout<< data[j+ i * _columns] <<" ";
+            strm<< M.data[i*M.columns()+j] <<" ";
+            strm<<endl;
+            }
+    return strm;
+}
+            

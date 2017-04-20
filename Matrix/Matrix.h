@@ -5,7 +5,12 @@
 #include <memory>
 #include<cstdlib>
 #include <time.h>
+#include<string>
 using namespace std;
+
+class Matrix;
+
+ostream &  operator << (ostream &, Matrix&);
 
 class Matrix
 {
@@ -20,6 +25,7 @@ protected:
 public:
     
     Matrix(size_t, size_t, double);
+    Matrix(size_t, size_t, string);
     Matrix(){};
     Matrix(size_t, size_t);
     
@@ -41,12 +47,20 @@ public:
     // display
     
     void dispMatrix();
+    // Operators
+    Matrix T();
     
     // operator overloading
     
     double * operator[](const size_t);
     const Matrix operator=(const Matrix &);
     Matrix  operator+( Matrix &);
+    Matrix  operator+( double);
+    Matrix  operator*( double);
+    
+    // Friends
+    friend ostream &  operator << (ostream &, Matrix&);
+    
 };
 
 class Zeros: public Matrix
