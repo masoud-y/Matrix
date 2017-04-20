@@ -2,20 +2,27 @@
 #define MATRIX_H
 
 #include <iostream>
-//#include <memory>
+#include <memory>
+#include<cstdlib>
+#include <time.h>
 using namespace std;
 
 class Matrix
 {
+protected:
     size_t _rows;
     size_t _columns;
+    //double val;
     unique_ptr<double []> data;
     // dArray *data;
    // double * data;
     
 public:
     
+    Matrix(size_t, size_t, double);
+    Matrix(){};
     Matrix(size_t, size_t);
+    
 
     Matrix( const  Matrix& );
     
@@ -29,6 +36,8 @@ public:
     double get(size_t, size_t);
     double get(size_t);
     
+    Matrix size();
+    
     // display
     
     void dispMatrix();
@@ -36,6 +45,32 @@ public:
     // operator overloading
     
     double * operator[](const size_t);
-    Matrix & operator+(const Matrix & obj);
+    const Matrix operator=(const Matrix &);
+    Matrix  operator+( Matrix &);
+};
+
+class Zeros: public Matrix
+{
+public:
+    Zeros(size_t rows, size_t columns): Matrix(rows, columns, 0)
+    {
+    }
+};
+
+class RandMatrix: public Matrix
+{
+public:
+    RandMatrix(size_t rows, size_t columns): Matrix(rows,columns)
+    {
+        srand((unsigned) time(0));
+        int mmax=100,
+            mmin=0;
+        data=make_unique<double []>(rows * columns);
+        {
+            for (size_t i =0; i<rows*columns; i++)
+                data[i]=((rand()%(mmax-mmin+1))-mmin)/100.00;
+        }
+
+    }
 };
 #endif
